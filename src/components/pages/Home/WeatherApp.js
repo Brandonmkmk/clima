@@ -3,37 +3,24 @@ import { useRef, useState } from "react"
 import  Button from "react-bootstrap/Button"
 import imageClimate from "../../../assets/images/climatization.png"
 import imageEarth from "../../../assets/images/earth.png"
+import { useFetchData } from "../../../hooks/useFetchData"
 
 const WeatherApp = ()=>{
-     
     const urlBase = 'https://api.openweathermap.org/data/2.5/weather'
     const API_KEY = '5349df1b44c7a71ff547dcdf8c53779c'
     const celcius = 276.15
-
-
-    const [city,setCity] = useState('')
-    const [dataClimate,setDataClimate] = useState(null)
+    const [city,setCity]=useState('')
+    const {data,fetchData} = useFetchData()
     const inputRef = useRef()
-
     const hanldeChange = (e)=>{
     setCity(e.target.value)
     }
-
+/*Si el input tiene un valor, se ejecuta la funcion fetchData, y se le pasa como argumento city,que es lo que el usuario escribio*/
     const handleClick = ()=>{
          if(city.length>0){
-            fetchData(city)
+            fetchData(urlBase,city,API_KEY)
             inputRef.current.value=null
          }
-    }
-
-    const fetchData = async(searchCity)=>{
-        try {
-            const response = await fetch(`${urlBase}?q=${searchCity}&appid=${API_KEY}`)
-            const data = await response.json()
-            setDataClimate(data)
-        } catch (error) {
-            console.log(error)
-        }
     }
     return (
         <>
@@ -46,13 +33,13 @@ const WeatherApp = ()=>{
         </div>
         {
             /*si data es true se ejecuta el codigo*/ 
-            dataClimate&&(
+            data&&(
                 <div className="container-city-result">
                       <div className="body-city-result">
                         <img className="image-city-climate" src={imageClimate} alt="Imagen de clima"/>
-                      <h2>{dataClimate.name}</h2>
-                    <p>Temperatura: {parseInt(dataClimate?.main?.temp-celcius)}</p>
-                    <p>Condicion meteorologica: {dataClimate.weather[0].description}</p>
+                      <h2>{data.name}</h2>
+                    <p>Temperatura: {parseInt(data?.main?.temp-celcius)}</p>
+                    <p>Condicion meteorologica: {data.weather[0].description}</p>
                       </div>
                 </div>
             )
